@@ -11,34 +11,12 @@ public class Board {
     public Square[][] chessBoardMatrix;
 
     public class Square {
-        private int rowIndex;
-        private int columnIndex;
+        public int rowIndex;
+        public int columnIndex;
 
-        private Piece piece;
+        public String userPosition;
 
-        public int getRowIndex() {
-            return rowIndex;
-        }
-
-        public void setRowIndex(int rowIndex) {
-            this.rowIndex = rowIndex;
-        }
-
-        public int getColumnIndex() {
-            return columnIndex;
-        }
-
-        public void setColumnIndex(int columnIndex) {
-            this.columnIndex = columnIndex;
-        }
-
-        public Piece getPiece() {
-            return piece;
-        }
-
-        public void setPiece(Piece piece) {
-            this.piece = piece;
-        }
+        public Piece piece;
     }
 
     public Board() {
@@ -99,8 +77,8 @@ public class Board {
         for (int rowIndex = 0; rowIndex < 8; rowIndex++) {
             for (int columnIndex = 0; columnIndex < 8; columnIndex++) {
                 Square square = new Square();
-                square.setRowIndex(rowIndex);
-                square.setColumnIndex(columnIndex);
+                square.rowIndex = rowIndex;
+                square.columnIndex = columnIndex;
 
                 chessBoardMatrix[rowIndex][columnIndex] = square;
             }
@@ -117,6 +95,7 @@ public class Board {
         int columnIndex = userColumnToIndexMap.get(userColumn);
 
         Square square = chessBoardMatrix[rowIndex][columnIndex];
+        square.userPosition = position;
         square.piece = piece;
 
         return square;
@@ -132,8 +111,6 @@ public class Board {
         int columnIndex = userColumnToIndexMap.get(userColumn);
 
         Square square = chessBoardMatrix[rowIndex][columnIndex];
-
-        System.out.println("Square: " + square.piece);
     }
 
     public void findValidMoves(Square square) {
@@ -142,14 +119,14 @@ public class Board {
         if (square.piece.getType().equalsIgnoreCase("B")) {
             movesList = findBishopMoves(square);
         } else if (square.piece.getType().equalsIgnoreCase("N")) {
-            movesList = findBishopMoves(square);
+            movesList = findKnightMoves(square);
         }
     }
 
     private ArrayList<String> findBishopMoves(Square square) {
         ArrayList<String> movesList = new ArrayList<>();
 
-        Piece piece = square.getPiece();
+        Piece piece = square.piece;
 
         int startRowIndex = square.rowIndex - 1;
         int startColumnIndex = square.columnIndex - 1;
@@ -241,7 +218,7 @@ public class Board {
 
         Collections.sort(movesList);
 
-        System.out.println("Bishop Valid Moves: " + String.join(" ", movesList));
+        System.out.println("B on " + square.userPosition + ": " + String.join(" ", movesList));
 
         return movesList;
     }
@@ -263,17 +240,43 @@ public class Board {
     private ArrayList<String> findKnightMoves(Square square) {
         ArrayList<String> movesList = new ArrayList<>();
 
-        Piece piece = square.getPiece();
+        Piece piece = square.piece;
 
-        int startRowIndex = square.rowIndex - 1;
-        int startColumnIndex = square.columnIndex - 1;
+        int minRowLimit = (square.rowIndex - 2 >= 0) ? square.rowIndex - 2 : 0;
+        int maxRowLimit = (square.rowIndex + 2 <= 7) ? square.rowIndex + 2 : 7;
+        int minColumnLimit = (square.columnIndex - 2 >= 0) ? square.columnIndex - 2 : 0;
+        int maxColumnLimit = (square.columnIndex + 2 <= 7) ? square.columnIndex + 2 : 7;
 
-        int minRowLimit = (startRowIndex - 2 >= 0) ? startRowIndex - 2 : 0;
-        int maxRowLimit = (startRowIndex + 2 <= 7) ? startRowIndex + 2 : 7;
-        int minColumnLimit = (startColumnIndex - 2 >= 0) ? startColumnIndex - 2 : 0;
-        int maxColumnLimit = (startColumnIndex + 2 <= 7) ? startColumnIndex + 2 : 7;
+        // Base on Knight's movement, Knight can not move row-wise, column-wise and diagonally.
+        // So if currently being iterated Square does not exist in the same row or column or diagonal
+        // then it means it's a valid move if different color piece or no piece is present.
+        for (int rowIndex = minRowLimit; rowIndex <= maxRowLimit; rowIndex++) {
+            for (int columnIndex = minColumnLimit; columnIndex <= maxColumnLimit; columnIndex++) {
+                Square traversedSquare = chessBoardMatrix[rowIndex][columnIndex];
 
-        return null;
+                if ((traversedSquare.columnIndex == square.columnIndex ||
+                        (traversedSquare.rowIndex == square.rowIndex))) {
+                    continue;
+                } else if ((traversedSquare.rowIndex + traversedSquare.columnIndex ==
+                        square.rowIndex + square.columnIndex) ||
+                        (Math.abs(traversedSquare.rowIndex - traversedSquare.columnIndex) ==
+                                Math.abs(square.rowIndex - square.columnIndex))) {
+                    continue;
+                } else if (traversedSquare.piece == null ||
+                        (traversedSquare.piece.getColor().equalsIgnoreCase(square.piece.getColor()) == false)) {
+                    int userRow = indexToUserRowMap.get(rowIndex);
+                    String userColumn = indexToUserColumnMap.get(columnIndex);
+
+                    movesList.add(userColumn + userRow);
+                }
+            }
+        }
+
+        Collections.sort(movesList);
+
+        System.out.println("N on " + square.userPosition + ": " + String.join(" ", movesList));
+
+        return movesList;
     }
 
     private void checkKnightMoves() {
