@@ -9,4 +9,10 @@ public class Constants {
     public static final String COLUMN_F = "f";
     public static final String COLUMN_G = "g";
     public static final String COLUMN_H = "h";
+
+    public static final String PIECE_TYPE_BISHOP = "B";
+    public static final String PIECE_TYPE_KNIGHT = "N";
+    public static final String PIECE_TYPE_ROOK = "R";
+
+    public static final String CONTINUE_GAME_OPTION_YES = "Y";
 }

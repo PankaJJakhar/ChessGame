@@ -19,6 +19,15 @@ public class Board {
         public Piece piece;
     }
 
+    public class MoveStats {
+        public String move;
+        public boolean shouldBreak;
+
+        public MoveStats() {
+            shouldBreak = false;
+        }
+    }
+
     public Board() {
         initialize();
     }
@@ -114,16 +123,16 @@ public class Board {
     }
 
     public void findValidMoves(Square square) {
-        ArrayList<String> movesList;
-
-        if (square.piece.getType().equalsIgnoreCase("B")) {
-            movesList = findBishopMoves(square);
-        } else if (square.piece.getType().equalsIgnoreCase("N")) {
-            movesList = findKnightMoves(square);
+        if (square.piece.getType().equalsIgnoreCase(Constants.PIECE_TYPE_BISHOP)) {
+            findBishopMoves(square);
+        } else if (square.piece.getType().equalsIgnoreCase(Constants.PIECE_TYPE_KNIGHT)) {
+            findKnightMoves(square);
+        } else if (square.piece.getType().equalsIgnoreCase(Constants.PIECE_TYPE_ROOK)) {
+            findRookMoves(square);
         }
     }
 
-    private ArrayList<String> findBishopMoves(Square square) {
+    private void findBishopMoves(Square square) {
         ArrayList<String> movesList = new ArrayList<>();
 
         Piece piece = square.piece;
@@ -140,12 +149,13 @@ public class Board {
         while (startRowIndex >= minRowLimit && startColumnIndex >= minColumnLimit) {
             Square traversedSquare = chessBoardMatrix[startRowIndex][startColumnIndex];
 
-            String nextMove = getNextBishipMove(traversedSquare, square, startRowIndex, startColumnIndex);
+            MoveStats moveStats = getMoveStats(traversedSquare, square, startRowIndex, startColumnIndex);
 
-            if (nextMove != null) {
-                movesList.add(nextMove);
-            } else {
-                // Definitely a piece of different color at square - Stop moving and exit
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
                 break;
             }
 
@@ -161,12 +171,13 @@ public class Board {
         while (startRowIndex >= minRowLimit && startColumnIndex <= maxColumnLimit) {
             Square traversedSquare = chessBoardMatrix[startRowIndex][startColumnIndex];
 
-            String nextMove = getNextBishipMove(traversedSquare, square, startRowIndex, startColumnIndex);
+            MoveStats moveStats = getMoveStats(traversedSquare, square, startRowIndex, startColumnIndex);
 
-            if (nextMove != null) {
-                movesList.add(nextMove);
-            } else {
-                // Definitely a piece of different color at square - Stop moving and exit
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
                 break;
             }
 
@@ -182,12 +193,13 @@ public class Board {
         while (startRowIndex <= maxRowLimit && startColumnIndex >= minColumnLimit) {
             Square traversedSquare = chessBoardMatrix[startRowIndex][startColumnIndex];
 
-            String nextMove = getNextBishipMove(traversedSquare, square, startRowIndex, startColumnIndex);
+            MoveStats moveStats = getMoveStats(traversedSquare, square, startRowIndex, startColumnIndex);
 
-            if (nextMove != null) {
-                movesList.add(nextMove);
-            } else {
-                // Definitely a piece of different color at square - Stop moving and exit
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
                 break;
             }
 
@@ -203,12 +215,13 @@ public class Board {
         while (startRowIndex <= maxRowLimit && startColumnIndex <= maxColumnLimit) {
             Square traversedSquare = chessBoardMatrix[startRowIndex][startColumnIndex];
 
-            String nextMove = getNextBishipMove(traversedSquare, square, startRowIndex, startColumnIndex);
+            MoveStats moveStats = getMoveStats(traversedSquare, square, startRowIndex, startColumnIndex);
 
-            if (nextMove != null) {
-                movesList.add(nextMove);
-            } else {
-                // Definitely a piece of different color at square - Stop moving and exit
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
                 break;
             }
 
@@ -219,25 +232,9 @@ public class Board {
         Collections.sort(movesList);
 
         System.out.println("B on " + square.userPosition + ": " + String.join(" ", movesList));
-
-        return movesList;
     }
 
-    private String getNextBishipMove(Square traversedSquare, Square square, int startRowIndex, int startColumnIndex) {
-        // Nothing at square - Keep on moving
-        // OR Piece of different color at square - Keep on moving
-        if (traversedSquare.piece == null
-                || (traversedSquare.piece.getColor().equalsIgnoreCase(square.piece.getColor()) == false)) {
-            int userRow = indexToUserRowMap.get(startRowIndex);
-            String userColumn = indexToUserColumnMap.get(startColumnIndex);
-
-            return userColumn + userRow;
-        }
-
-        return null;
-    }
-
-    private ArrayList<String> findKnightMoves(Square square) {
+    private void findKnightMoves(Square square) {
         ArrayList<String> movesList = new ArrayList<>();
 
         Piece piece = square.piece;
@@ -275,11 +272,98 @@ public class Board {
         Collections.sort(movesList);
 
         System.out.println("N on " + square.userPosition + ": " + String.join(" ", movesList));
-
-        return movesList;
     }
 
-    private void checkKnightMoves() {
+    private void findRookMoves(Square square) {
+        ArrayList<String> movesList = new ArrayList<>();
 
+        Piece piece = square.piece;
+
+        // Check vertically up.
+        for (int rowIndex = square.rowIndex - 1; rowIndex >= 0; rowIndex--) {
+            Square traversedSquare = chessBoardMatrix[rowIndex][square.columnIndex];
+
+            MoveStats moveStats = getMoveStats(traversedSquare, square, rowIndex, square.columnIndex);
+
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
+                break;
+            }
+        }
+
+        // Check vertically down.
+        for (int rowIndex = square.rowIndex + 1; rowIndex <= 7; rowIndex++) {
+            Square traversedSquare = chessBoardMatrix[rowIndex][square.columnIndex];
+
+            MoveStats moveStats = getMoveStats(traversedSquare, square, rowIndex, square.columnIndex);
+
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
+                break;
+            }
+        }
+
+        // Check horizontally left.
+        for (int columnIndex = square.columnIndex - 1; columnIndex >= 0; columnIndex--) {
+            Square traversedSquare = chessBoardMatrix[square.rowIndex][columnIndex];
+
+            MoveStats moveStats = getMoveStats(traversedSquare, square, square.rowIndex, columnIndex);
+
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
+                break;
+            }
+        }
+
+        // Check horizontally right.
+        for (int columnIndex = square.columnIndex + 1; columnIndex <= 7; columnIndex++) {
+            Square traversedSquare = chessBoardMatrix[square.rowIndex][columnIndex];
+
+            MoveStats moveStats = getMoveStats(traversedSquare, square, square.rowIndex, columnIndex);
+
+            if (moveStats.move != null) {
+                movesList.add(moveStats.move);
+            }
+
+            if (moveStats.shouldBreak) {
+                break;
+            }
+        }
+
+        Collections.sort(movesList);
+
+        System.out.println("R on " + square.userPosition + ": " + String.join(" ", movesList));
+    }
+
+    public MoveStats getMoveStats(Square traversedSquare, Square square, int rowIndex, int columnIndex) {
+        MoveStats moveStats = new MoveStats();
+
+        int userRow = indexToUserRowMap.get(rowIndex);
+        String userColumn = indexToUserColumnMap.get(columnIndex);
+
+        if (traversedSquare.piece == null) {
+            moveStats.move = userColumn + userRow;
+        } else if (traversedSquare.piece != null &&
+                (traversedSquare.piece.getColor().equalsIgnoreCase(square.piece.getColor()) == false)) {
+            // Piece exist at square but of different color - Legal move.
+            moveStats.move = userColumn + userRow;
+
+            moveStats.shouldBreak = true;
+        } else if (traversedSquare.piece != null &&
+                (traversedSquare.piece.getColor().equalsIgnoreCase(square.piece.getColor()) == true)) {
+            // Piece exist at square but of different color - Illegal move.
+            moveStats.shouldBreak = true;
+        }
+
+        return moveStats;
     }
 }

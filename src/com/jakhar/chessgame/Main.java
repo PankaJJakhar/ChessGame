@@ -1,6 +1,7 @@
 package com.jakhar.chessgame;
 
 import com.jakhar.chessgame.core.Board;
+import com.jakhar.chessgame.core.Constants;
 import com.jakhar.chessgame.core.Piece;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class Main {
             System.out.print("\nContinue (Y/N)?: ");
             String nextGamePlayOption = inputScanner.next();
 
-            if (nextGamePlayOption.equalsIgnoreCase("Y") == false) {
+            if (nextGamePlayOption.equalsIgnoreCase(Constants.CONTINUE_GAME_OPTION_YES) == false) {
                 // If input is not Y, stop the game anyway, don't go in loop.
                 wantToContinuePlaying = false;
             }
@@ -57,7 +58,7 @@ public class Main {
             String color = inputScanner.nextLine();
 
             // Type
-            System.out.print("Enter type (B/N): ");
+            System.out.print("Enter type (B/N/R): ");
             String type = inputScanner.nextLine();
 
             // Position
@@ -78,9 +79,5 @@ public class Main {
         for (Board.Square square : squaresList) {
             gameBoard.findValidMoves(square);
         }
-    }
-
-    private void findValidMoves(Board.Square square) {
-
     }
 }
