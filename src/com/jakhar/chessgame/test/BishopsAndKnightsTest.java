@@ -8,7 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-public class BishopAndKnightsTest {
+public class BishopsAndKnightsTest {
 
     @Test
     public void testForInputSizeOne() {

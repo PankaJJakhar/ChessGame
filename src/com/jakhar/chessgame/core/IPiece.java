@@ -1,9 +1,8 @@
 package com.jakhar.chessgame.core;
 
-public interface IPiece {
-    public void setColor(String color);
-    public void setType(String color);
+import java.util.ArrayList;
 
-    public String getColor();
-    public String getType();
+public interface IPiece {
+    public void findValidMoves(ChessBoard.Square square);
+    public void printValidMoves(ChessBoard.Square square, ArrayList<String> movesList);
 }

@@ -1,22 +1,25 @@
 package com.jakhar.chessgame;
 
-import com.jakhar.chessgame.core.Board;
-import com.jakhar.chessgame.core.Constants;
-import com.jakhar.chessgame.core.Piece;
+import com.jakhar.chessgame.core.*;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AppMain {
     private Scanner inputScanner;
-    private Board gameBoard;
+    private ChessBoard gameBoard;
 
-    private ArrayList<Piece> piecesList;
-    private ArrayList<Board.Square> squaresList;
+    private ArrayList<ChessPiece> piecesList;
+    private ArrayList<ChessBoard.Square> squaresList;
 
     public static void main(String[] args) {
         AppMain game = new AppMain();
-        game.start();
+
+        try {
+            game.start();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     public void start() {
@@ -28,7 +31,9 @@ public class AppMain {
 
         while (wantToContinuePlaying) {
             squaresList = new ArrayList<>();
-            gameBoard = new Board();
+            gameBoard = new ChessBoard();
+
+            GameContext.getInstance().setBoard(gameBoard);
 
             handleGameInputs();
             findValidMoves();
@@ -65,9 +70,9 @@ public class AppMain {
             System.out.print("Enter position: ");
             String position = inputScanner.nextLine();
 
-            Piece piece = new Piece();
-            piece.setColor(color);
-            piece.setType(type);
+            ChessPiece piece = new ChessPiece();
+            piece.color = color;
+            piece.type = type;
 
             squaresList.add(gameBoard.addPiece(position, piece));
             gameBoard.printSquare(position);
@@ -76,7 +81,7 @@ public class AppMain {
 
     private void findValidMoves() {
         System.out.println("\nValid moves");
-        for (Board.Square square : squaresList) {
+        for (ChessBoard.Square square : squaresList) {
             gameBoard.findValidMoves(square);
         }
     }
