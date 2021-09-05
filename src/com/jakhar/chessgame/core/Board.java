@@ -3,13 +3,20 @@ package com.jakhar.chessgame.core;
 import java.util.*;
 
 public class Board {
-    private HashMap<Integer, Integer> userRowToIndexMap;
-    private HashMap<String, Integer> userColumnToIndexMap;
-    private HashMap<Integer, Integer> indexToUserRowMap;
-    private HashMap<Integer, String> indexToUserColumnMap;
+    public HashMap<Integer, Integer> userRowToIndexMap;
+    public HashMap<String, Integer> userColumnToIndexMap;
+    public HashMap<Integer, Integer> indexToUserRowMap;
+    public HashMap<Integer, String> indexToUserColumnMap;
 
     public Square[][] chessBoardMatrix;
 
+    /**
+     * Each square on the board will be represented by this
+     * Chess has 8x8 squares on the board.
+     * Each square has its indices so that we know where it is located.
+     * Square also has the information on the chess Piece sitting on it.
+     * Square also has information of user entered position.
+     */
     public class Square {
         public int rowIndex;
         public int columnIndex;
@@ -19,6 +26,9 @@ public class Board {
         public Piece piece;
     }
 
+    /**
+     * This is going to help us to track the next move for our chess pieces
+     */
     public class MoveStats {
         public String move;
         public boolean shouldBreak;

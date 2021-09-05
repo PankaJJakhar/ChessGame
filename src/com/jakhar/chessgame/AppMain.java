@@ -7,7 +7,7 @@ import com.jakhar.chessgame.core.Piece;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Main {
+public class AppMain {
     private Scanner inputScanner;
     private Board gameBoard;
 
@@ -15,12 +15,14 @@ public class Main {
     private ArrayList<Board.Square> squaresList;
 
     public static void main(String[] args) {
-        Main game = new Main();
+        AppMain game = new AppMain();
         game.start();
     }
 
     public void start() {
         System.out.println("> FindValidMoves");
+
+        inputScanner = new Scanner(System.in);
 
         boolean wantToContinuePlaying = true;
 
@@ -42,8 +44,6 @@ public class Main {
     }
 
     private void handleGameInputs() {
-        inputScanner = new Scanner(System.in);
-
         System.out.print("\nEnter number of pieces: ");
 
         int numberOfPieces = inputScanner.nextInt();
